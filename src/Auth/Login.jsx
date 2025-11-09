@@ -1,10 +1,12 @@
-import { use } from "react";
+import { use, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { FaGoogle } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 const Login = () => {
     const { signInUser, signInWithGoogle } = use(AuthContext);
+    const [showPassword, setShowPassword] = useState(false)
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -53,13 +55,22 @@ const Login = () => {
                             placeholder="Email"
                         />
 
-                        <label className="label">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className="input rounded-full focus:border-0 focus:outline-gray-200"
-                            placeholder="Password"
-                        />
+                        <div className="relative">
+                            <label className="label">Password</label>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                className="input rounded-full focus:border-0 focus:outline-gray-200"
+                                placeholder="Password"
+                            />
+                            <span
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-7 top-8 cursor-pointer text-gray-600"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+
+                        </div>
                         <div>
                             <a className="link link-hover">Forgot password?</a>
                         </div>

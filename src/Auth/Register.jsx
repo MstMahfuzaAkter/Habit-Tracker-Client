@@ -1,12 +1,14 @@
-import React, { use } from "react";
+import React, { use, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { FaGoogle } from "react-icons/fa6";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
     const { createUser, updateUserProfile, signInWithGoogle } = use(AuthContext);
     const navigate = useNavigate();
+    const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleRegister = (event) => {
         event.preventDefault();
@@ -15,6 +17,12 @@ const Register = () => {
         const email = event.target.email.value;
         const password = event.target.password.value;
 
+
+        if (!/(?=.*[a-z])/.test(password) || !/(?=.*[A-Z])/.test(password) || password.length < 6) {
+            setError("Password must include uppercase, lowercase, and be at least 6 characters long");
+            toast.error("Invalid password format!");
+            return;
+        }
         toast.loading("Creating user...", { id: "create-user" });
 
         createUser(email, password)
@@ -22,6 +30,8 @@ const Register = () => {
                 console.log(result.user);
                 updateUserProfile(displayName, photoURL);
                 toast.success("User created successfully!", { id: "create-user" });
+                setError("");
+                navigate("/");
             })
             .catch((error) => {
                 console.log(error);
@@ -68,19 +78,29 @@ const Register = () => {
                         {/* email field */}
                         <label className="label">Email</label>
                         <input
-                            type="email"
+                                                                         type="email"
                             name="email"
                             className="input rounded-full focus:border-0 focus:outline-gray-200"
                             placeholder="Email"
                         />
                         {/* password field */}
-                        <label className="label">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className="input rounded-full focus:border-0 focus:outline-gray-200"
-                            placeholder="Password"
-                        />
+                        <div className="relative">
+                            <label className="label">Password</label>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                className="input rounded-full focus:border-0 focus:outline-gray-200"
+                                placeholder="Password"
+                            />
+                            <span
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-7 top-8 cursor-pointer text-gray-600"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+
+                        </div>
+                        {error && <p className="text-red-500 text-sm">{error}</p>}
                         <div>
                             <a className="link link-hover">Forgot password?</a>
                         </div>
