@@ -5,13 +5,18 @@ import Footer from '../Components/Footer';
 
 const MainLayout = () => {
     return (
-        <div className="max-w-7xl mx-auto">
-            <NavBar />
-            <div className="mt-4">
-                <Outlet />
+        <>
+            <div className="max-w-7xl mx-auto">
+                <NavBar />
+                <div className="mt-4">
+                    <Outlet />
+                </div>
+
             </div>
-            <Footer/>
-        </div>
+            <Footer></Footer>
+
+        </>
+
     );
 };
 

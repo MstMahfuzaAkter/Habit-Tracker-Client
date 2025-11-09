@@ -4,9 +4,9 @@ import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { FaGear, FaUser } from "react-icons/fa6";
 import { use, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { SiDailydotdev } from "react-icons/si";
 import { MdAddchart } from "react-icons/md";
 import { GiAnatomy } from "react-icons/gi";
+import { LuRotate3D } from "react-icons/lu";
 
 
 const NavBar = () => {
@@ -73,7 +73,7 @@ const NavBar = () => {
                     </ul>
                 </div>
                 <Link to={"/"} className="flex items-center gap-1 text-xl font-bold">
-                    <SiDailydotdev />Habit Tracker
+                    <LuRotate3D />Habit Tracker
                 </Link>
             </div>
             <div className="navbar-center hidden md:flex">
