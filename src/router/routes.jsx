@@ -33,8 +33,8 @@ export const router = createBrowserRouter([
             },
             {
                 path: "browser-public-habit",
-                element: 
-                    <BrowsePublicHabits></BrowsePublicHabits>
+                element: <BrowsePublicHabits></BrowsePublicHabits>,
+                loader:()=>fetch("http://localhost:3000/habit")
                 
             },
             {
