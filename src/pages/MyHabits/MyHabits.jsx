@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { calculateStreak } from "./calculateStreak";
@@ -11,7 +10,7 @@ const MyHabits = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch habits
+  // Fetch habits from backend
   const fetchHabits = async () => {
     if (!user?.email) return;
     setLoading(true);
@@ -26,7 +25,11 @@ const MyHabits = () => {
       });
       setHabits(habitsWithStreak);
     } catch (err) {
-      toast.error("Failed to load habits");
+      Swal.fire({
+        icon: "error",
+        title: "Failed to load habits",
+        text: "Please try again later.",
+      });
     } finally {
       setLoading(false);
     }
@@ -36,7 +39,7 @@ const MyHabits = () => {
     fetchHabits();
   }, [user]);
 
-  // Delete habit
+  // SweetAlert delete
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -60,26 +63,46 @@ const MyHabits = () => {
     });
   };
 
-  // Mark complete
+  // Mark complete with SweetAlert
   const handleMarkComplete = async (id) => {
     const todayStr = new Date().toISOString().split("T")[0];
+
     setHabits((prev) =>
       prev.map((habit) => {
         if (habit._id !== id) return habit;
+
         if (habit.completedToday) {
-          toast.error("Already marked complete today!");
+          Swal.fire({
+            icon: "info",
+            title: "Already Completed",
+            text: "You have already marked this habit as complete today!",
+          });
           return habit;
         }
 
         const updatedHistory = [...(habit.completionHistory || []), todayStr];
         const newStreak = calculateStreak(updatedHistory);
-        toast.success("Marked complete! 💪");
 
+        // Update backend
         fetch(`http://localhost:3000/habit/${id}/complete`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ date: todayStr }),
-        }).catch(() => toast.error("Failed to update backend"));
+        })
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "Great job! 💪",
+              text: `You have completed "${habit.title}" for today.`,
+            });
+          })
+          .catch(() => {
+            Swal.fire({
+              icon: "error",
+              title: "Oops!",
+              text: "Failed to update habit on the server.",
+            });
+          });
 
         return { ...habit, completionHistory: updatedHistory, currentStreak: newStreak, completedToday: true };
       })
@@ -90,14 +113,14 @@ const MyHabits = () => {
     return <div className="text-center py-10 text-gray-600">Please wait... Loading your habits ⏳</div>;
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 sm:p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">My Habits</h1>
 
       {habits.length === 0 ? (
         <p className="text-gray-500 text-center text-lg">No habits found. Add one to get started!</p>
       ) : (
-        <div className="grid gap-4 md:gap-6">
-          {/* Large screens: table */}
+        <>
+          {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full border border-gray-200">
               <thead className="bg-gray-100">
@@ -118,7 +141,16 @@ const MyHabits = () => {
                     <td className="px-4 py-2">{new Date(habit.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-2 space-x-2 flex flex-wrap">
                       <button
-                        onClick={() => navigate(`/update-habit/${habit._id}`)}
+                        onClick={() => {
+                          navigate(`/update-habit/${habit._id}`);
+                          Swal.fire({
+                            icon: "info",
+                            title: "Redirecting...",
+                            text: `You will update "${habit.title}".`,
+                            timer: 1200,
+                            showConfirmButton: false,
+                          });
+                        }}
                         className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
                       >
                         Update
@@ -147,33 +179,46 @@ const MyHabits = () => {
             </table>
           </div>
 
-          {/* Small screens: cards */}
-          <div className="md:hidden flex flex-col gap-4">
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-4">
             {habits.map((habit) => (
               <div key={habit._id} className="border rounded-lg p-4 shadow-sm bg-white">
-                <h2 className="font-semibold text-lg truncate">{habit.title}</h2>
-                <p className="text-gray-500 text-sm">Category: {habit.category}</p>
-                <p className="text-gray-500 text-sm">Current Streak: {habit.currentStreak}</p>
-                <p className="text-gray-500 text-sm">
-                  Created: {new Date(habit.createdAt).toLocaleDateString()}
+                <h2 className="font-bold text-lg mb-1">{habit.title}</h2>
+                <p className="text-gray-600 mb-1">
+                  <span className="font-semibold">Category:</span> {habit.category}
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <p className="text-gray-600 mb-1">
+                  <span className="font-semibold">Current Streak:</span> {habit.currentStreak}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <span className="font-semibold">Created:</span> {new Date(habit.createdAt).toLocaleDateString()}
+                </p>
+                <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => navigate(`/update-habit/${habit._id}`)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
+                    onClick={() => {
+                      navigate(`/update-habit/${habit._id}`);
+                      Swal.fire({
+                        icon: "info",
+                        title: "Redirecting...",
+                        text: `You will update "${habit.title}".`,
+                        timer: 1200,
+                        showConfirmButton: false,
+                      });
+                    }}
+                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition flex-1"
                   >
                     Update
                   </button>
                   <button
                     onClick={() => handleDelete(habit._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-1"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => handleMarkComplete(habit._id)}
                     disabled={habit.completedToday}
-                    className={`px-2 py-1 rounded text-sm text-white ${
+                    className={`px-2 py-1 rounded text-white flex-1 ${
                       habit.completedToday
                         ? "bg-green-500 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-blue-700"
@@ -185,7 +230,7 @@ const MyHabits = () => {
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
