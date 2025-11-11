@@ -2,12 +2,12 @@ import React, { useRef } from "react";
 import Slider from "react-slick";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Typewriter } from "react-simple-typewriter"; // <- import
 
 // Slick carousel styles
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Slide data
 const slides = [
   {
     title: "Build Habits, Build Your Future",
@@ -74,7 +74,7 @@ const HeroSlider = () => {
 
             {/* Dark overlay */}
             <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center text-white px-4">
-              {/* Animated title */}
+              {/* Animated title with Typewriter */}
               <motion.h1
                 key={`title-${i}`}
                 initial={{ opacity: 0, y: 20 }}
@@ -82,7 +82,15 @@ const HeroSlider = () => {
                 transition={{ duration: 0.8 }}
                 className="text-4xl md:text-6xl font-bold mb-3"
               >
-                {slide.title}
+                <Typewriter
+                  words={[slide.title]}
+                  loop={1} // type once
+                  cursor
+                  cursorStyle="_"
+                  typeSpeed={70}
+                  deleteSpeed={50}
+                  delaySpeed={2000}
+                />
               </motion.h1>
 
               {/* Animated subtitle */}
