@@ -10,6 +10,7 @@ import Register from "../Auth/Register";
 import Profile from "../Profile/Profile";
 import HabitDetails from "../pages/HabitDetails/HabitDetails";
 import UpdateHabit from "../pages/UpdateHabit/UpdateHabit";
+import NotFound from "../pages/NotFound/NotFound";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +27,11 @@ export const router = createBrowserRouter([
                 element: <PrivateRoute>
                     <AddHabit></AddHabit>
                 </PrivateRoute>
+            },
+
+            {
+                path: "*",
+                element: <NotFound />
             },
             {
                 path: "my-habit",
