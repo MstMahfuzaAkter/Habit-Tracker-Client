@@ -3,7 +3,6 @@ import { useLoaderData } from "react-router";
 import toast from "react-hot-toast";
 import { calculateStreak } from "../MyHabits/calculateStreak";
 
-
 const HabitDetails = () => {
   const data = useLoaderData();
   const habitData = data?.result;
@@ -18,7 +17,9 @@ const HabitDetails = () => {
     return d.toISOString().split("T")[0];
   });
 
-  const completionDates = (habit.completionHistory || []).map(d => new Date(d).toISOString().split("T")[0]);
+  const completionDates = (habit.completionHistory || []).map(d =>
+    new Date(d).toISOString().split("T")[0]
+  );
   const completedDays = last30Days.filter(d => completionDates.includes(d)).length;
   const progressPercent = Math.round((completedDays / 30) * 100);
   const streak = calculateStreak(completionDates);
@@ -64,41 +65,86 @@ const HabitDetails = () => {
               />
             </div>
           )}
+
           <div className="flex flex-col justify-start space-y-4 w-full md:w-1/2">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{habit.title}</h1>
 
+            {/* Badges with tooltip */}
             <div className="flex flex-wrap gap-3">
-              <span className="badge badge-lg badge-outline text-blue-600 border-blue-600 font-medium">{habit.category}</span>
-              <span className="badge badge-lg badge-outline text-gray-500 border-gray-500 font-medium">
-                Reminder: {habit.reminderTime || "Not set"}
-              </span>
-            </div>
+              <div className="relative group inline-block">
+                <span className="badge badge-lg badge-outline text-blue-600 border-blue-600 font-medium">
+                  {habit.category}
+                </span>
+                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-1 max-h-40 overflow-y-auto whitespace-normal z-10 w-48">
+                  Category: {habit.category}
+                </div>
+              </div>
 
-            <p className="text-gray-700 leading-relaxed text-base md:text-lg">{habit.description}</p>
-
-            <div className="text-sm text-gray-500 space-y-1">
-              <p><span className="font-semibold">Created by:</span> {habit.userName}</p>
-              <p><span className="font-semibold">Email:</span> {habit.userEmail}</p>
-              <p><span className="font-semibold">Created At:</span> {new Date(habit.createdAt).toLocaleDateString()}</p>
-            </div>
-
-            <div className="mt-4">
-              <p className="font-semibold mb-1">Progress (Last 30 Days): {progressPercent}%</p>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div className="bg-green-500 h-3 rounded-full" style={{ width: `${progressPercent}%` }} />
+              <div className="relative group inline-block">
+                <span className="badge badge-lg badge-outline text-gray-500 border-gray-500 font-medium">
+                  Reminder: {habit.reminderTime || "Not set"}
+                </span>
+                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-1 max-h-40 overflow-y-auto whitespace-normal z-10 w-48">
+                  {habit.reminderTime ? `Remind at: ${habit.reminderTime}` : "No reminder set"}
+                </div>
               </div>
             </div>
 
-            <div className="mt-4">
-              <span className="inline-block bg-yellow-400 text-black font-bold px-4 py-1 rounded-full">🔥 {streak} Day Streak</span>
+            {/* Description with tooltip */}
+            <div className="relative group inline-block">
+              <p className="text-gray-700 leading-relaxed text-base md:text-lg">
+                {habit.description.length > 150
+                  ? habit.description.slice(0, 150) + "..."
+                  : habit.description}
+              </p>
+              {habit.description.length > 150 && (
+                <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-2 w-64 max-h-40 overflow-y-auto whitespace-normal z-10">
+                  {habit.description}
+                </div>
+              )}
             </div>
 
+            {/* Meta info */}
+            <div className="text-sm text-gray-500 space-y-1">
+              <p>
+                <span className="font-semibold">Created by:</span> {habit.userName}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span> {habit.userEmail}
+              </p>
+              <p>
+                <span className="font-semibold">Created At:</span>{" "}
+                {new Date(habit.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <p className="font-semibold mb-1">Progress (Last 30 Days): {progressPercent}%</p>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-green-500 h-3 rounded-full"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Streak */}
+            <div className="mt-4">
+              <span className="inline-block bg-yellow-400 text-black font-bold px-4 py-1 rounded-full">
+                🔥 {streak} Day Streak
+              </span>
+            </div>
+
+            {/* Mark Complete Button */}
             <div className="mt-6">
               <button
                 onClick={handleMarkComplete}
                 disabled={completionDates.includes(todayStr)}
                 className={`px-5 py-2 rounded-lg shadow text-white ${
-                  completionDates.includes(todayStr) ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                  completionDates.includes(todayStr)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 {completionDates.includes(todayStr) ? "Completed" : "Mark Complete ✅"}
