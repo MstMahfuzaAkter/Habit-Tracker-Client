@@ -1,16 +1,19 @@
-# React + Vite
+Project Name:Habit Tracker Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Live Site:
 
-Currently, two official plugins are available:
+Habit Tracker is a modern web application that helps users create, track, and manage daily habits. Keep track of your progress, build streaks, and stay motivated every day!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Features
+.Create & Manage Habits: Easily add new habits with descriptions, categories, and reminders.
 
-## React Compiler
+.Progress Tracking: Track your daily habit completion with interactive progress bars for the last 30 days.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+.Streak System: Stay motivated with a streak counter showing consecutive days of habit completion.
 
-## Expanding the ESLint configuration
+.Search & Filter: Quickly find habits by title, keywords, or category.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+.Secure Access: Only registered users can mark habits as complete or view detailed habit information.
+
+.Responsive Design: Works beautifully on desktop, tablet, and mobile devices.

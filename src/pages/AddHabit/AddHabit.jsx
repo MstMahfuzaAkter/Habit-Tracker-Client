@@ -17,7 +17,7 @@ const AddHabitModal = () => {
       category: e.target.category.value,
       description: e.target.description.value,
       reminderTime: e.target.reminderTime.value,
-      image: e.target.image.value, 
+      image: e.target.image.value,
       userEmail: user.email,
       userName: user.displayName || user.name,
       createdAt: new Date(),
@@ -150,9 +150,8 @@ const AddHabitModal = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`btn w-full text-white mt-6 rounded-full ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
-              }`}
+              className={`btn w-full text-white mt-6 rounded-full ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+                }`}
             >
               {loading ? "Adding..." : "Add Habit"}
             </button>

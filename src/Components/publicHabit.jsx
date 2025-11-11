@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import LoadingSpinner from "../pages/LoadingSpinner/LoadingSpinner";
+
 
 const PublicHabits = () => {
   const [habits, setHabits] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3000/latest-habit")
       .then((res) => res.json())
-      .then((data) => setHabits(data))
-      .catch((err) => console.error(err));
+      .then((data) => {
+        setHabits(data);
+        setLoading(false); 
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
   const handleViewDetails = (habitId) => {
@@ -20,6 +29,8 @@ const PublicHabits = () => {
       navigate(`/habit/${habitId}`); 
     }
   };
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="p-6">
@@ -36,7 +47,6 @@ const PublicHabits = () => {
             <button
               onClick={() => handleViewDetails(habit._id)}
               className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-cyan-600 transition"
-
             >
               View Details
             </button>
