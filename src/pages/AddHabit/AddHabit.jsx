@@ -26,7 +26,7 @@ const AddHabitModal = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/habit", {
+      const res = await fetch("https://habit-tracker-server-coral.vercel.app/habit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

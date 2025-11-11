@@ -9,7 +9,7 @@ const PublicHabits = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/latest-habit")
+    fetch("https://habit-tracker-server-coral.vercel.app/latest-habit")
       .then((res) => res.json())
       .then((data) => {
         setHabits(data);

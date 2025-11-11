@@ -10,7 +10,7 @@ const UpdateHabit = () => {
 
   // 🔹 Fetch existing habit data
   useEffect(() => {
-    fetch(`http://localhost:3000/habit/${id}`)
+    fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && data?.result) {
@@ -32,7 +32,7 @@ const UpdateHabit = () => {
 
     const { _id, ...updatedData } = habit;
 
-    fetch(`http://localhost:3000/habit/${id}`, {
+    fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData),
