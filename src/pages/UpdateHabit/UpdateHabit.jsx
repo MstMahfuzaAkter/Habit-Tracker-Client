@@ -1,0 +1,164 @@
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import toast from "react-hot-toast";
+
+const UpdateHabit = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [habit, setHabit] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  // 🔹 Fetch existing habit data
+  useEffect(() => {
+    fetch(`http://localhost:3000/habit/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.result) {
+          setHabit(data.result);
+        } else {
+          toast.error("Failed to load habit data");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Error loading habit");
+        setLoading(false);
+      });
+  }, [id]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { _id, ...updatedData } = habit;
+
+    fetch(`http://localhost:3000/habit/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success("Habit updated successfully!");
+          navigate("/my-habit");
+        } else {
+          toast.error("Failed to update habit!");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Server error. Please try again!");
+      });
+  };
+
+  if (loading) {
+    return <p className="text-center text-gray-600 py-10">Loading habit...</p>;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto bg-white shadow-md p-6 rounded-lg">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+        Update Habit
+      </h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Habit Title */}
+        <div>
+          <label className="block font-semibold mb-1">Habit Title</label>
+          <input
+            type="text"
+            value={habit.title || ""}
+            onChange={(e) => setHabit({ ...habit, title: e.target.value })}
+            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="block font-semibold mb-1">Category</label>
+          <input
+            type="text"
+            value={habit.category || ""}
+            onChange={(e) => setHabit({ ...habit, category: e.target.value })}
+            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block font-semibold mb-1">Description</label>
+          <textarea
+            value={habit.description || ""}
+            onChange={(e) => setHabit({ ...habit, description: e.target.value })}
+            className="textarea textarea-bordered w-full border-gray-300 rounded-md p-2"
+            rows="4"
+            required
+          />
+        </div>
+
+        {/* Reminder Time */}
+        <div>
+          <label className="block font-semibold mb-1">Reminder Time</label>
+          <input
+            type="time"
+            value={habit.reminderTime || ""}
+            onChange={(e) =>
+              setHabit({ ...habit, reminderTime: e.target.value })
+            }
+            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+          />
+        </div>
+
+        {/* User Name (non-editable) */}
+        <div>
+          <label className="block font-semibold mb-1">User Name</label>
+          <input
+            type="text"
+            value={habit.userName || ""}
+            disabled
+            className="input input-bordered w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+          />
+        </div>
+
+        {/* User Email (non-editable) */}
+        <div>
+          <label className="block font-semibold mb-1">User Email</label>
+          <input
+            type="email"
+            value={habit.userEmail || ""}
+            disabled
+            className="input input-bordered w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+          />
+        </div>
+
+        {/* Optional Image Upload */}
+        <div>
+          <label className="block font-semibold mb-1">Upload Image (optional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setHabit({ ...habit, image: e.target.files[0]?.name || habit.image })
+            }
+            className="file-input file-input-bordered w-full border-gray-300"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="text-center">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition"
+          >
+            Update Habit
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default UpdateHabit;

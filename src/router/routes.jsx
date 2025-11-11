@@ -8,6 +8,8 @@ import BrowsePublicHabits from "../pages/BrowsePublicHabits/BrowsePublicHabits";
 import Login from "../Auth/Login";
 import Register from "../Auth/Register";
 import Profile from "../Profile/Profile";
+import HabitDetails from "../pages/HabitDetails/HabitDetails";
+import UpdateHabit from "../pages/UpdateHabit/UpdateHabit";
 
 export const router = createBrowserRouter([
     {
@@ -34,8 +36,8 @@ export const router = createBrowserRouter([
             {
                 path: "browser-public-habit",
                 element: <BrowsePublicHabits></BrowsePublicHabits>,
-                loader:()=>fetch("http://localhost:3000/habit")
-                
+                loader: () => fetch("http://localhost:3000/habit")
+
             },
             {
                 path: "/auth/login",
@@ -44,7 +46,24 @@ export const router = createBrowserRouter([
             {
                 path: "/auth/register",
                 element: <Register />,
-            }
+            },
+            {
+                path: "/habit/:id",
+                element: <HabitDetails></HabitDetails>,
+                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
+
+
+
+            },
+            {
+                path: "/update-habit/:id",
+                element: (
+                    <PrivateRoute>
+                        <UpdateHabit></UpdateHabit>
+                    </PrivateRoute>
+                ),
+                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
+            },
         ]
     },
 
