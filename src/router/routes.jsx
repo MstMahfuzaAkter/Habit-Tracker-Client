@@ -55,7 +55,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/habit/:id",
-                element: <HabitDetails></HabitDetails>,
+                element: <PrivateRoute><HabitDetails></HabitDetails></PrivateRoute>,
                 loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
 
 

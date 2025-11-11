@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const AddHabitModal = () => {
   const { user } = useContext(AuthContext);
@@ -9,6 +10,7 @@ const AddHabitModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    <LoadingSpinner></LoadingSpinner>
 
     const formData = {
       title: e.target.title.value,
