@@ -47,7 +47,7 @@ const UpdateHabit = () => {
           });
 
           
-          setTimeout(() => navigate("/my-habit"), 1500);
+          setTimeout(() => navigate("/my-habit"), 500);
         } else {
           toast.error("Failed to update habit!");
         }
