@@ -1,33 +1,37 @@
 import { useLoaderData } from "react-router";
 import { useNavigate } from "react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useContext } from "react";
 import toast from "react-hot-toast";
 
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { AuthContext } from "../../context/AuthContext";
+
 const BrowsePublicHabits = () => {
-  const data = useLoaderData(); 
+  const data = useLoaderData();
   const navigate = useNavigate();
+  const { user, loading } = useContext(AuthContext);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const handleSeeDetails = (habitId) => {
-    const isLoggedIn = localStorage.getItem("token");
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-    if (!isLoggedIn) {
+  const handleSeeDetails = (habitId) => {
+    if (!user) {
       toast.error("Please log in to view habit details!");
-      setTimeout(() => navigate("/login"), 1000);
+      setTimeout(() => navigate("/auth/login"), 1000);
     } else {
       navigate(`/habit/${habitId}`);
     }
   };
 
-  // Get unique categories dynamically
   const categories = useMemo(() => {
     const cats = data.map((h) => h.category);
     return ["All", ...new Set(cats)];
   }, [data]);
 
-  // Filter habits based on search + category
   const filteredHabits = useMemo(() => {
     return data.filter((habit) => {
       const matchesSearch =
@@ -46,10 +50,10 @@ const BrowsePublicHabits = () => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Explore Public Habits 
+        Explore Public Habits
       </h1>
 
-      {/* Search & Filter */}
+      {/* 🔍 Search & Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
         <input
           type="text"
@@ -72,7 +76,7 @@ const BrowsePublicHabits = () => {
         </select>
       </div>
 
-      {/* Habits Grid */}
+      {/*  Habits Grid */}
       {filteredHabits.length === 0 ? (
         <p className="text-center text-gray-500 mt-10">
           No habits found. Try adjusting your filters.

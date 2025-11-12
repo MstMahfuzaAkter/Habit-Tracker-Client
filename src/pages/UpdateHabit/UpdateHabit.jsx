@@ -27,6 +27,7 @@ const UpdateHabit = () => {
       });
   }, [id]);
 
+  // 🔹 Handle update submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -40,8 +41,13 @@ const UpdateHabit = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          toast.success("Habit updated successfully!");
-          navigate("/my-habit");
+          toast.success(" Habit updated successfully!", {
+            duration:3000,
+            position: "top-right",
+          });
+
+          
+          setTimeout(() => navigate("/my-habit"), 1500);
         } else {
           toast.error("Failed to update habit!");
         }
@@ -70,7 +76,7 @@ const UpdateHabit = () => {
             type="text"
             value={habit.title || ""}
             onChange={(e) => setHabit({ ...habit, title: e.target.value })}
-            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+            className="border border-gray-300 w-full rounded-md p-2"
             required
           />
         </div>
@@ -82,7 +88,7 @@ const UpdateHabit = () => {
             type="text"
             value={habit.category || ""}
             onChange={(e) => setHabit({ ...habit, category: e.target.value })}
-            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+            className="border border-gray-300 w-full rounded-md p-2"
             required
           />
         </div>
@@ -93,7 +99,7 @@ const UpdateHabit = () => {
           <textarea
             value={habit.description || ""}
             onChange={(e) => setHabit({ ...habit, description: e.target.value })}
-            className="textarea textarea-bordered w-full border-gray-300 rounded-md p-2"
+            className="border border-gray-300 w-full rounded-md p-2"
             rows="4"
             required
           />
@@ -108,40 +114,44 @@ const UpdateHabit = () => {
             onChange={(e) =>
               setHabit({ ...habit, reminderTime: e.target.value })
             }
-            className="input input-bordered w-full border-gray-300 rounded-md p-2"
+            className="border border-gray-300 w-full rounded-md p-2"
           />
         </div>
 
-        {/* User Name (non-editable) */}
+        {/* User Info (non-editable) */}
         <div>
           <label className="block font-semibold mb-1">User Name</label>
           <input
             type="text"
             value={habit.userName || ""}
             disabled
-            className="input input-bordered w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+            className="border border-gray-200 w-full bg-gray-100 text-gray-500 p-2 rounded-md"
           />
         </div>
 
-        {/* User Email (non-editable) */}
         <div>
           <label className="block font-semibold mb-1">User Email</label>
           <input
             type="email"
             value={habit.userEmail || ""}
             disabled
-            className="input input-bordered w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+            className="border border-gray-200 w-full bg-gray-100 text-gray-500 p-2 rounded-md"
           />
         </div>
 
-        {/* Optional Image Upload */}
+        {/* Image Upload (Optional) */}
         <div>
-          <label className="block font-semibold mb-1">Upload Image (optional)</label>
+          <label className="block font-semibold mb-1">
+            Upload Image (optional)
+          </label>
           <input
             type="file"
             accept="image/*"
             onChange={(e) =>
-              setHabit({ ...habit, image: e.target.files[0]?.name || habit.image })
+              setHabit({
+                ...habit,
+                image: e.target.files[0]?.name || habit.image,
+              })
             }
             className="file-input file-input-bordered w-full border-gray-300"
           />

@@ -39,7 +39,7 @@ const MyHabits = () => {
     fetchHabits();
   }, [user]);
 
-  // SweetAlert delete
+  // SweetAlert for delete
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -164,11 +164,10 @@ const MyHabits = () => {
                       <button
                         onClick={() => handleMarkComplete(habit._id)}
                         disabled={habit.completedToday}
-                        className={`px-2 py-1 rounded text-sm text-white ${
-                          habit.completedToday
+                        className={`px-2 py-1 rounded text-sm text-white ${habit.completedToday
                             ? "bg-green-500 cursor-not-allowed"
                             : "bg-blue-600 hover:bg-blue-700"
-                        }`}
+                          }`}
                       >
                         {habit.completedToday ? "Completed" : "Mark Complete"}
                       </button>
@@ -218,11 +217,10 @@ const MyHabits = () => {
                   <button
                     onClick={() => handleMarkComplete(habit._id)}
                     disabled={habit.completedToday}
-                    className={`px-2 py-1 rounded text-white flex-1 ${
-                      habit.completedToday
+                    className={`px-2 py-1 rounded text-white flex-1 ${habit.completedToday
                         ? "bg-green-500 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-blue-700"
-                    }`}
+                      }`}
                   >
                     {habit.completedToday ? "Completed" : "Mark Complete"}
                   </button>
