@@ -18,7 +18,7 @@ const badges = [
 
 const MotivationalSection = () => {
   return (
-    <section className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
+    <section className="py-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
       <div className="max-w-6xl mx-auto px-6 text-center">
         <motion.h2
           className="text-3xl md:text-4xl font-bold mb-8 text-gray-800 dark:text-gray-100"

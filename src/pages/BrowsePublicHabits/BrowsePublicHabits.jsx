@@ -48,8 +48,8 @@ const BrowsePublicHabits = () => {
   }, [data, searchTerm, selectedCategory]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-500">
+      <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
         Explore Public Habits
       </h1>
 
@@ -60,13 +60,13 @@ const BrowsePublicHabits = () => {
           placeholder="Search by title or keyword..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 dark:border-gray-700 rounded px-4 py-2 w-full md:w-1/2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
         />
 
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 dark:border-gray-700 rounded px-4 py-2 w-full md:w-1/4 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
         >
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -76,9 +76,9 @@ const BrowsePublicHabits = () => {
         </select>
       </div>
 
-      {/*  Habits Grid */}
+      {/* Habits Grid */}
       {filteredHabits.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10">
+        <p className="text-center text-gray-500 dark:text-gray-400 mt-10">
           No habits found. Try adjusting your filters.
         </p>
       ) : (
@@ -86,21 +86,21 @@ const BrowsePublicHabits = () => {
           {filteredHabits.map((habit) => (
             <div
               key={habit._id}
-              className="bg-white shadow-md rounded-lg p-5 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300 border border-gray-100"
+              className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-5 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
             >
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">
+              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
                 {habit.title}
               </h2>
-              <p className="text-gray-600 mb-3">
+              <p className="text-gray-600 dark:text-gray-300 mb-3">
                 {habit.description.slice(0, 100)}...
               </p>
-              <div className="text-sm text-gray-500 mb-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 <p>Category: {habit.category}</p>
                 <p>By: {habit.userName}</p>
               </div>
               <button
                 onClick={() => handleSeeDetails(habit._id)}
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition"
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition"
               >
                 See Details
               </button>
