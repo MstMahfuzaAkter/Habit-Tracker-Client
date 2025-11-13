@@ -67,8 +67,8 @@ const HabitDetails = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 px-4 sm:px-6 md:px-8">
-      <div className="bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden transition-all duration-300">
+    <div className="max-w-6xl mx-auto mt-10 px-4 sm:px-6 md:px-8 overflow-x-hidden">
+      <div className="bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden transition-colors duration-300">
         <div className="flex flex-col md:flex-row gap-6 lg:gap-8 p-4 sm:p-6 md:p-8">
           {habit.image && (
             <div className="w-full md:w-1/2 h-64 sm:h-80 md:h-auto flex-shrink-0">
@@ -81,7 +81,7 @@ const HabitDetails = () => {
           )}
 
           <div className="flex flex-col justify-start space-y-4 w-full md:w-1/2 text-gray-800 dark:text-gray-200">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold break-words">
+            <h1 className="text-2xl sm:text-3xl mt-8 md:text-4xl font-bold break-words">
               {habit.title}
             </h1>
 
@@ -91,7 +91,7 @@ const HabitDetails = () => {
                 <span className="badge badge-lg badge-outline text-blue-600 border-blue-600 font-medium">
                   {habit.category}
                 </span>
-                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-1 z-10 w-48">
+                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-1 z-10 w-56 sm:w-64">
                   Category: {habit.category}
                 </div>
               </div>
@@ -105,18 +105,18 @@ const HabitDetails = () => {
             {/* Description */}
             <div className="relative group inline-block">
               <p className="leading-relaxed text-sm sm:text-base md:text-lg break-words">
-                {habit.description.length > 150
-                  ? habit.description.slice(0, 150) + "..."
+                {habit.description.length > 200
+                  ? habit.description.slice(0, 200) + "..."
                   : habit.description}
               </p>
               {habit.description.length > 150 && (
-                <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-2 w-64 max-h-40 overflow-y-auto whitespace-normal z-10">
+                <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-2 w-56 sm:w-64 max-h-40 overflow-y-auto whitespace-normal z-10">
                   {habit.description}
                 </div>
               )}
             </div>
 
-            {/* Meta */}
+            {/* Meta Info */}
             <div className="text-xs sm:text-sm md:text-sm space-y-1 text-gray-500 dark:text-gray-400">
               <p>
                 <span className="font-semibold">Created by:</span> {habit.userName}
@@ -135,9 +135,9 @@ const HabitDetails = () => {
               <p className="font-semibold mb-1 text-sm sm:text-base">
                 Progress (Last 30 Days): {progressPercent}%
               </p>
-              <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-3 sm:h-4">
                 <div
-                  className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-green-500 h-3 sm:h-4 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
