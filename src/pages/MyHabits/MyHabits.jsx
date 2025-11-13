@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { calculateStreak } from "./calculateStreak";
 import { AuthContext } from "../../context/AuthContext";
+import Loader from "../Loader/Loader";
 
 const MyHabits = () => {
   const { user } = useContext(AuthContext);
@@ -110,7 +111,7 @@ const MyHabits = () => {
   };
 
   if (loading)
-    return <div className="text-center py-10 text-gray-600">Please wait... Loading your habits ⏳</div>;
+    return <Loader></Loader>
 
   return (
     <div className="p-4 sm:p-6">

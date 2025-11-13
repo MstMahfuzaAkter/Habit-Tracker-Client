@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { AuthContext } from "../../context/AuthContext";
+import Loader from "../Loader/Loader";
 
 const BrowsePublicHabits = () => {
   const data = useLoaderData();
@@ -15,7 +16,7 @@ const BrowsePublicHabits = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <Loader></Loader>;
   }
 
   const handleSeeDetails = (habitId) => {
