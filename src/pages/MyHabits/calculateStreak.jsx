@@ -1,19 +1,25 @@
-export const calculateStreak = (history = []) => {
-  if (!history.length) return 0;
+export const calculateStreak = (dates) => {
+  if (!dates || dates.length === 0) return 0;
 
-  const sorted = [...history]
-    .map(d => new Date(d).toISOString().split("T")[0])
-    .sort((a, b) => new Date(b) - new Date(a));
-
+  const sorted = dates.sort((a, b) => new Date(b) - new Date(a));
+  const today = new Date();
   let streak = 0;
-  let current = new Date();
+  let allowedMiss = 1; 
 
-  for (let dateStr of sorted) {
-    const diff = Math.floor((current - new Date(dateStr)) / (1000 * 60 * 60 * 24));
-    if (diff === 0 || diff === 1) {
+  for (let i = 0; i < sorted.length; i++) {
+    const date = new Date(sorted[i]);
+    const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === streak) {
+      
       streak++;
-      current = new Date(dateStr);
-    } else break;
+    } else if (diffDays === streak + 1 && allowedMiss > 0) {
+      allowedMiss--;
+      streak++;
+    } else {
+      break; 
+    }
   }
+
   return streak;
 };

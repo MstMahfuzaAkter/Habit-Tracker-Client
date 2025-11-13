@@ -8,7 +8,7 @@ const UpdateHabit = () => {
   const [habit, setHabit] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Fetch existing habit data
+  // 🔹 Fetch habit data
   useEffect(() => {
     fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`)
       .then((res) => res.json())
@@ -27,10 +27,9 @@ const UpdateHabit = () => {
       });
   }, [id]);
 
-  // 🔹 Handle update submission
+  // 🔹 Handle Update
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const { _id, ...updatedData } = habit;
 
     fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`, {
@@ -41,13 +40,11 @@ const UpdateHabit = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          toast.success(" Habit updated successfully!", {
-            duration:3000,
+          toast.success("Habit updated successfully!", {
+            duration: 3000,
             position: "top-right",
           });
-
-          
-          setTimeout(() => navigate("/my-habit"), 500);
+          setTimeout(() => navigate("/my-habit"), 600);
         } else {
           toast.error("Failed to update habit!");
         }
@@ -59,47 +56,57 @@ const UpdateHabit = () => {
   };
 
   if (loading) {
-    return <p className="text-center text-gray-600 py-10">Loading habit...</p>;
+    return (
+      <p className="text-center text-gray-600 dark:text-gray-300 py-10">
+        Loading habit...
+      </p>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-md p-6 rounded-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 p-6 rounded-2xl transition-all duration-300">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">
         Update Habit
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Habit Title */}
         <div>
-          <label className="block font-semibold mb-1">Habit Title</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            Habit Title
+          </label>
           <input
             type="text"
             value={habit.title || ""}
             onChange={(e) => setHabit({ ...habit, title: e.target.value })}
-            className="border border-gray-300 w-full rounded-md p-2"
+            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 w-full rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         {/* Category */}
         <div>
-          <label className="block font-semibold mb-1">Category</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            Category
+          </label>
           <input
             type="text"
             value={habit.category || ""}
             onChange={(e) => setHabit({ ...habit, category: e.target.value })}
-            className="border border-gray-300 w-full rounded-md p-2"
+            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 w-full rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block font-semibold mb-1">Description</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            Description
+          </label>
           <textarea
             value={habit.description || ""}
             onChange={(e) => setHabit({ ...habit, description: e.target.value })}
-            className="border border-gray-300 w-full rounded-md p-2"
+            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 w-full rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="4"
             required
           />
@@ -107,41 +114,47 @@ const UpdateHabit = () => {
 
         {/* Reminder Time */}
         <div>
-          <label className="block font-semibold mb-1">Reminder Time</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            Reminder Time
+          </label>
           <input
             type="time"
             value={habit.reminderTime || ""}
             onChange={(e) =>
               setHabit({ ...habit, reminderTime: e.target.value })
             }
-            className="border border-gray-300 w-full rounded-md p-2"
+            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 w-full rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* User Info (non-editable) */}
+        {/* User Info */}
         <div>
-          <label className="block font-semibold mb-1">User Name</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            User Name
+          </label>
           <input
             type="text"
             value={habit.userName || ""}
             disabled
-            className="border border-gray-200 w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+            className="border border-gray-200 dark:border-gray-700 w-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 p-2 rounded-md"
           />
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">User Email</label>
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
+            User Email
+          </label>
           <input
             type="email"
             value={habit.userEmail || ""}
             disabled
-            className="border border-gray-200 w-full bg-gray-100 text-gray-500 p-2 rounded-md"
+            className="border border-gray-200 dark:border-gray-700 w-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 p-2 rounded-md"
           />
         </div>
 
-        {/* Image Upload (Optional) */}
+        {/* Image Upload */}
         <div>
-          <label className="block font-semibold mb-1">
+          <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
             Upload Image (optional)
           </label>
           <input
@@ -153,15 +166,15 @@ const UpdateHabit = () => {
                 image: e.target.files[0]?.name || habit.image,
               })
             }
-            className="file-input file-input-bordered w-full border-gray-300"
+            className="file-input file-input-bordered w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="text-center">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-all duration-200 shadow-md"
           >
             Update Habit
           </button>

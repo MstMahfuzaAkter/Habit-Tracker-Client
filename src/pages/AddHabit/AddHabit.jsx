@@ -10,7 +10,6 @@ const AddHabitModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    <LoadingSpinner></LoadingSpinner>
 
     const formData = {
       title: e.target.title.value,
@@ -26,14 +25,17 @@ const AddHabitModal = () => {
     };
 
     try {
-      const res = await fetch("https://habit-tracker-server-coral.vercel.app/habit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://habit-tracker-server-coral.vercel.app/habit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
@@ -52,33 +54,47 @@ const AddHabitModal = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Toaster position="top-right" reverseOrder={false} />
 
-      <div className="card border border-gray-200 bg-base-100 w-full max-w-md mx-auto shadow-2xl rounded-2xl">
+      <div className="card border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 w-full max-w-md shadow-2xl rounded-2xl transition-all duration-300">
         <div className="card-body p-6 relative">
-          <h2 className="text-2xl font-bold text-center mb-6">Add New Habit</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">
+            Add New Habit
+          </h2>
+
+          {/* Spinner overlay */}
+          {loading && (
+            <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10 rounded-2xl">
+              <LoadingSpinner />
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4 relative z-0">
             {/* Habit Title */}
             <div>
-              <label className="label font-medium">Habit Title</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                Habit Title
+              </label>
               <input
                 type="text"
                 name="title"
                 required
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-200"
+                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
                 placeholder="Enter habit title"
               />
             </div>
 
-            {/* Category Dropdown */}
+            {/* Category */}
             <div>
-              <label className="label font-medium">Category</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                Category
+              </label>
               <select
                 defaultValue={""}
                 name="category"
                 required
-                className="select w-full rounded-full focus:border-0 focus:outline-gray-200"
+                className="select w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
               >
                 <option value="" disabled>
                   Select category
@@ -93,56 +109,65 @@ const AddHabitModal = () => {
 
             {/* Description */}
             <div>
-              <label className="label font-medium">Description</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                Description
+              </label>
               <textarea
                 name="description"
                 required
                 rows="4"
-                className="textarea w-full rounded-2xl focus:border-0 focus:outline-gray-200 h-[150px]"
+                className="textarea w-full rounded-2xl focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600 h-[150px]"
                 placeholder="Enter description"
               ></textarea>
             </div>
 
-            {/* Reminder Time */}
+            {/* Reminder */}
             <div>
-              <label className="label font-medium">Reminder Time</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                Reminder Time
+              </label>
               <input
                 type="time"
                 name="reminderTime"
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-200"
+                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
               />
             </div>
 
-            {/* Image URL */}
+            {/* Image */}
             <div>
-              <label className="label font-medium">Image URL (Optional)</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                Image URL (Optional)
+              </label>
               <input
                 type="text"
                 name="image"
                 placeholder="https://example.com/image.jpg"
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-200"
+                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
               />
             </div>
 
-            {/* User Email */}
+            {/* User Info */}
             <div>
-              <label className="label font-medium">User Email</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                User Email
+              </label>
               <input
                 type="email"
                 value={user.email}
                 readOnly
-                className="input w-full rounded-full bg-gray-100 focus:border-0 focus:outline-gray-200"
+                className="input w-full rounded-full bg-gray-100 dark:bg-gray-800 focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
               />
             </div>
 
-            {/* User Name */}
             <div>
-              <label className="label font-medium">User Name</label>
+              <label className="label font-medium text-gray-700 dark:text-gray-200">
+                User Name
+              </label>
               <input
                 type="text"
                 value={user.displayName || user.name}
                 readOnly
-                className="input w-full rounded-full bg-gray-100 focus:border-0 focus:outline-gray-200"
+                className="input w-full rounded-full bg-gray-100 dark:bg-gray-800 focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
               />
             </div>
 
@@ -150,8 +175,11 @@ const AddHabitModal = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`btn w-full text-white mt-6 rounded-full ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
-                }`}
+              className={`btn w-full text-white mt-6 rounded-full transition ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+              }`}
             >
               {loading ? "Adding..." : "Add Habit"}
             </button>
