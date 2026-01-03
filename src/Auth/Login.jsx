@@ -1,138 +1,125 @@
-import { useContext, useState } from "react"; // Changed 'use' to 'useContext' for standard compatibility
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Standard router import
+import { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
-import { AuthContext } from "../context/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import toast, { Toaster } from "react-hot-toast";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
-    const { signInUser, signInWithGoogle } = useContext(AuthContext);
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const { signInUser, signInWithGoogle } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const location = useLocation();
-    const navigate = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const handleLogIn = (event) => {
-        event.preventDefault();
-        setLoading(true);
-        const email = event.target.email.value;
-        const password = event.target.password.value;
+  const handleLogIn = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        signInUser(email, password)
-            .then((result) => {
-                toast.success(`Welcome back, ${result.user?.displayName || "User"}!`);
-                event.target.reset();
-                setTimeout(() => navigate(location.state || "/"), 1200);
-            })
-            .catch((error) => {
-                console.error(error);
-                toast.error(error.message || "Invalid credentials. Please try again.");
-            })
-            .finally(() => setLoading(false));
-    };
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-    const handleGoogleSignIn = () => {
-        signInWithGoogle()
-            .then((result) => {
-                toast.success("Signed in with Google!");
-                navigate(location?.state || "/");
-            })
-            .catch((error) => {
-                toast.error("Google Sign-in failed.");
-            });
-    };
+    try {
+      await signInUser(email, password);
+      toast.success("Login successful!");
+      navigate(location.state?.from || "/");
+    } catch {
+      toast.error("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className="min-h-[80vh] flex items-center justify-center px-4">
-            {/* Using the same Toaster theme from your Add Habit modal */}
-            <Toaster 
-                toastOptions={{
-                    className: 'dark:bg-slate-800 dark:text-white rounded-2xl font-bold border border-slate-200 dark:border-slate-700',
-                    success: { iconTheme: { primary: '#3B82F6', secondary: '#fff' } }
-                }}
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      toast.success("Signed in with Google");
+      navigate(location.state?.from || "/");
+    } catch {
+      toast.error("Google sign-in failed");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors">
+      <Toaster />
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 transition-colors">
+        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
+          Login
+        </h2>
+
+        <form onSubmit={handleLogIn} className="space-y-5">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="example@email.com"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
+          </div>
 
-            <div className="card bg-white dark:bg-slate-900 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 rounded-[2.5rem] overflow-hidden">
-                <div className="p-8 md:p-10">
-                    <header className="text-center mb-8">
-                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Login<span className="text-blue-500">.</span>
-                        </h1>
-                        <p className="text-slate-500 text-sm mt-2 font-medium">Continue your journey to productivity.</p>
-                    </header>
+          {/* Password */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              required
+              placeholder="********"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
-                    <form onSubmit={handleLogIn} className="space-y-4">
-                        <div className="form-control">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="name@example.com"
-                            />
-                        </div>
+          {/* Submit */}
+          <button
+            disabled={loading}
+            className={`w-full py-2 rounded-lg font-bold text-white transition ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            }`}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
-                        <div className="form-control relative">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">
-                                Password
-                            </label>
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="••••••••"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-5 top-[44px] text-slate-400 hover:text-blue-500 transition-colors"
-                            >
-                                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20}/>}
-                            </button>
-                        </div>
+        {/* Divider */}
+        <div className="my-5 text-center text-sm text-gray-400 dark:text-gray-300">or</div>
 
-                        <div className="flex justify-end px-2">
-                            <button type="button" className="text-xs font-bold text-slate-400 hover:text-blue-500 transition-colors">
-                                Forgot password?
-                            </button>
-                        </div>
+        {/* Google Sign In */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+        >
+          <FaGoogle className="text-red-500" />
+          Continue with Google
+        </button>
 
-                        <button 
-                            disabled={loading}
-                            className={`btn w-full text-white border-none mt-2 h-14 rounded-2xl text-lg font-black shadow-lg shadow-blue-500/30 bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-[1.02] active:scale-95 transition-all ${loading ? 'opacity-70' : ''}`}
-                        >
-                            {loading ? "Authenticating..." : "Login"}
-                        </button>
-                    </form>
-
-                    <div className="divider text-xs font-black text-slate-300 uppercase tracking-widest my-8">Or continue with</div>
-
-                    <button
-                        onClick={handleGoogleSignIn}
-                        className="btn w-full bg-white dark:bg-slate-800 rounded-2xl text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 h-14 font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
-                    >
-                        <FaGoogle className="text-red-500" />
-                        Google
-                    </button>
-
-                    <p className="text-center mt-8 text-slate-500 font-medium">
-                        New here? {" "}
-                        <Link
-                            className="text-blue-500 font-black hover:underline"
-                            to="/auth/register"
-                        >
-                            Create Account
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
+        {/* Register */}
+        <p className="text-center text-sm mt-5 text-gray-700 dark:text-gray-300">
+          Don’t have an account?{" "}
+          <Link to="/auth/register" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Register
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

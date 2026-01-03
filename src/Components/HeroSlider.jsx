@@ -51,7 +51,7 @@ const HeroSlider = () => {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-base-100 shadow-xl mx-auto max-w-7xl mt-6 border border-base-300">
+    <section className="relative overflow-hidden rounded-3xl  mx-auto max-w-7xl mt-6 ">
       <Slider ref={sliderRef} {...settings}>
         {slides.map((slide, i) => (
           <div key={i} className="outline-none">

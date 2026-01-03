@@ -81,7 +81,6 @@ const Profile = () => {
               <p className="text-sm text-base-content/60 mb-6">Update your account preferences or secure your data.</p>
             </div>
             <div className="flex flex-col gap-3">
-              <Link to="/update-habit/:id" className="btn btn-outline btn-sm rounded-xl hover:bg-primary hover:border-primary">Update Profile</Link>
               <button onClick={signOutUser} className="btn btn-error btn-sm rounded-xl text-white">
                 <IoLogOut /> Sign Out
               </button>

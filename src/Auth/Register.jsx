@@ -1,158 +1,161 @@
-import React, { useContext, useState } from "react"; // Changed use to useContext for standard React
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa6";
+import { FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
-    const { createUser, updateUserProfile, signInWithGoogle } = useContext(AuthContext);
-    const navigate = useNavigate();
-    const [error, setError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const { createUser, updateUserProfile, signInWithGoogle } =
+    useContext(AuthContext);
 
-    const handleRegister = async (event) => {
-        event.preventDefault();
-        setError("");
-        setLoading(true);
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-        const displayName = event.target.displayName.value;
-        const photoURL = event.target.photoURL.value;
-        const email = event.target.email.value;
-        const password = event.target.password.value;
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        // Validation
-        if (!/(?=.*[a-z])/.test(password) || !/(?=.*[A-Z])/.test(password) || password.length < 6) {
-            const msg = "Password must include uppercase, lowercase, and be at least 6 characters long";
-            setError(msg);
-            toast.error(msg);
-            setLoading(false);
-            return;
-        }
+    const name = e.target.displayName.value;
+    const photo = e.target.photoURL.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-        const toastId = toast.loading("Creating your profile...");
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
 
-        try {
-            const result = await createUser(email, password);
-            await updateUserProfile(displayName, photoURL);
-            toast.success(`Welcome, ${displayName}!`, { id: toastId });
-            navigate("/");
-        } catch (err) {
-            console.error(err);
-            toast.error(err.message || "Registration failed", { id: toastId });
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      await createUser(email, password);
+      await updateUserProfile(name, photo);
+      toast.success("Account created successfully!");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleGoogleSignIn = () => {
-        signInWithGoogle()
-            .then(() => {
-                toast.success("Account created via Google!");
-                navigate("/");
-            })
-            .catch((err) => toast.error(err.message));
-    };
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      toast.success("Signed up with Google");
+      navigate("/");
+    } catch {
+      toast.error("Google sign-up failed");
+    }
+  };
 
-    return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-50 dark:bg-black/10">
-            <Toaster />
-            
-            <div className="card bg-white dark:bg-slate-900 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 rounded-[2.5rem] overflow-hidden">
-                <div className="p-8 md:p-10">
-                    <header className="text-center mb-8">
-                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Join Us<span className="text-blue-500">.</span>
-                        </h1>
-                        <p className="text-slate-500 text-sm mt-2 font-medium">Start building better habits today.</p>
-                    </header>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors">
+      <Toaster />
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 transition-colors">
+        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
+          Create Account
+        </h2>
 
-                    <form onSubmit={handleRegister} className="space-y-4">
-                        {/* Name Field */}
-                        <div className="form-control">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">Full Name</label>
-                            <input
-                                type="text"
-                                name="displayName"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="John Doe"
-                            />
-                        </div>
+        <form onSubmit={handleRegister} className="space-y-5">
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="displayName"
+              required
+              placeholder="John Doe"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </div>
 
-                        {/* Photo URL Field */}
-                        <div className="form-control">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">Avatar URL</label>
-                            <input
-                                type="text"
-                                name="photoURL"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="https://image.link"
-                            />
-                        </div>
+          {/* Photo URL */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Photo URL
+            </label>
+            <input
+              type="text"
+              name="photoURL"
+              placeholder="https://example.com/photo.jpg"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </div>
 
-                        {/* Email Field */}
-                        <div className="form-control">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="email@example.com"
-                            />
-                        </div>
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="email@example.com"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </div>
 
-                        {/* Password Field */}
-                        <div className="form-control relative">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4 mb-2 block">Security Key</label>
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                required
-                                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all px-6 py-4 h-auto"
-                                placeholder="••••••••"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-5 top-[44px] text-slate-400 hover:text-blue-500 transition-colors"
-                            >
-                                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20}/>}
-                            </button>
-                        </div>
+          {/* Password */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              required
+              placeholder="******"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
-                        {error && <p className="text-red-500 text-[10px] font-bold uppercase tracking-tight ml-4">{error}</p>}
+          {/* Submit */}
+          <button
+            disabled={loading}
+            className={`w-full py-2 rounded-lg font-bold text-white transition ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            }`}
+          >
+            {loading ? "Creating..." : "Register"}
+          </button>
+        </form>
 
-                        <button 
-                            disabled={loading}
-                            className={`btn w-full text-white border-none mt-4 h-14 rounded-2xl text-lg font-black shadow-lg shadow-blue-500/30 bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-[1.02] active:scale-95 transition-all ${loading ? 'opacity-70' : ''}`}
-                        >
-                            {loading ? "Creating Account..." : "Create Account"}
-                        </button>
-                    </form>
+        {/* Divider */}
+        <div className="my-5 text-center text-sm text-gray-400 dark:text-gray-300">or</div>
 
-                    <div className="divider text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] my-8">Quick Connect</div>
+        {/* Google Sign Up */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+        >
+          <FaGoogle className="text-red-500" />
+          Continue with Google
+        </button>
 
-                    <button
-                        onClick={handleGoogleSignIn}
-                        className="btn w-full bg-white dark:bg-slate-800 rounded-2xl text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 h-14 font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
-                    >
-                        <FaGoogle className="text-red-500" />
-                        Sign up with Google
-                    </button>
-
-                    <p className="text-center mt-8 text-slate-500 font-medium">
-                        Already have an account? {" "}
-                        <Link className="text-blue-500 font-black hover:underline" to="/auth/login">
-                            Login
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
+        {/* Login Link */}
+        <p className="text-center text-sm mt-5 text-gray-700 dark:text-gray-300">
+          Already have an account?{" "}
+          <Link to="/auth/login" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Register;

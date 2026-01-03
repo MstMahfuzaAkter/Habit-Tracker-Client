@@ -30,7 +30,7 @@ const PublicHabits = () => {
     <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#0B0F1A] transition-colors duration-500 pb-10 pt-10">
       
       {/* Section Header */}
-      <div className="max-w-[1400px] mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto  mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div >
           <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
             Community <span className="text-blue-600">Library</span>
@@ -45,7 +45,7 @@ const PublicHabits = () => {
       </div>
 
       {/* 4-Column Responsive Grid */}
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="max-w-[1400px] mx-auto ">
         {habits.length === 0 ? (
           <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl text-slate-400">
             No habits shared yet.
@@ -59,7 +59,7 @@ const PublicHabits = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => navigate(`/habit/${habit._id}`)}
-                className="group cursor-pointer bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-4 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-500/50 flex flex-col h-full"
+                className="group cursor-pointer bg-white px-2 dark:bg-slate-900  dark:border-slate-800 rounded-[2rem]  transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-500/50 flex flex-col h-full"
               >
                 {/* Image Container */}
                 <div className="relative w-full h-48 mb-4 overflow-hidden rounded-[1.5rem]">
@@ -85,9 +85,6 @@ const PublicHabits = () => {
                     </div>
                   </div>
                   
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
-                    {habit.description || "Master this routine and stay consistent with the community."}
-                  </p>
 
                   {/* Meta Info (Price/Status Row) */}
                   <div className="flex items-center justify-between mt-auto mb-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
