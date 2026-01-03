@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
@@ -6,182 +7,157 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 const AddHabitModal = () => {
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    const form = e.target;
     const formData = {
-      title: e.target.title.value,
-      category: e.target.category.value,
-      description: e.target.description.value,
-      reminderTime: e.target.reminderTime.value,
-      image: e.target.image.value,
+      title: form.title.value,
+      category: form.category.value,
+      description: form.description.value,
+      reminderTime: form.reminderTime.value,
+      image: form.image.value || "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=500",
       userEmail: user.email,
       userName: user.displayName || user.name,
       createdAt: new Date(),
       completionHistory: [],
+      streak: 0,
       isPublic: false,
     };
 
     try {
-      const res = await fetch(
-        "https://habit-tracker-server-coral.vercel.app/habit",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await res.json();
+      const res = await fetch("http://localhost:3000/habit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (res.ok) {
         toast.success("Habit added successfully!");
-        e.target.reset();
+        form.reset();
+        setTimeout(() => navigate("/my-habit"), 1500);
       } else {
+        const data = await res.json();
         toast.error(data.message || "Failed to add habit");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Server error!");
+      toast.error("Connection error. Is the server running?");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 dark:bg-black/20 font-sans">
+      {/* --- Customized Toaster to match UI --- */}
+      <Toaster 
+        position="top-right" 
+        toastOptions={{
+          className: 'dark:bg-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 font-bold rounded-2xl shadow-2xl',
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#2563EB', // Blue-600
+              secondary: '#FFFFFF',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#EF4444', // Red-500
+              secondary: '#FFFFFF',
+            },
+          }
+        }}
+      />
 
-      <div className="card border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 w-full max-w-md shadow-2xl rounded-2xl transition-all duration-300">
-        <div className="card-body p-6 relative">
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">
-            Add New Habit
-          </h2>
+      <div className="card bg-white dark:bg-slate-900 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden">
+        <div className="p-8 relative">
+          <header className="text-center mb-8">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Create a <span className="text-blue-600">New Habit</span>
+            </h2>
+            <p className="text-slate-500 text-sm mt-2">Define your routine and start tracking progress.</p>
+          </header>
 
-          {/* Spinner overlay */}
           {loading && (
-            <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10 rounded-2xl">
+            <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center z-50">
               <LoadingSpinner />
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 relative z-0">
-            {/* Habit Title */}
-            <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                Habit Title
-              </label>
-              <input
-                type="text"
-                name="title"
-                required
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
-                placeholder="Enter habit title"
-              />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-4 mb-1 block italic">Habit Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  placeholder="e.g. Morning Meditation"
+                  className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-4 mb-1 block italic">Category</label>
+                <select
+                  name="category"
+                  required
+                  defaultValue=""
+                  className="select w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all"
+                >
+                  <option value="" disabled>Select</option>
+                  <option value="Fitness">Fitness</option>
+                  <option value="Work">Work</option>
+                  <option value="Study">Study</option>
+                  <option value="Mindset">Mindset</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-4 mb-1 block italic">Reminder</label>
+                <input
+                  type="time"
+                  name="reminderTime"
+                  className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
             </div>
 
-            {/* Category */}
             <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                Category
-              </label>
-              <select
-                defaultValue={""}
-                name="category"
-                required
-                className="select w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                <option value="Morning">Morning</option>
-                <option value="Work">Work</option>
-                <option value="Fitness">Fitness</option>
-                <option value="Evening">Evening</option>
-                <option value="Study">Study</option>
-              </select>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                Description
-              </label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-4 mb-1 block italic">Description</label>
               <textarea
                 name="description"
                 required
-                rows="4"
-                className="textarea w-full rounded-2xl focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600 h-[150px]"
-                placeholder="Enter description"
+                placeholder="What is the goal of this habit?"
+                className="textarea w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 h-24 transition-all"
               ></textarea>
             </div>
 
-            {/* Reminder */}
             <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                Reminder Time
-              </label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-4 mb-1 block italic">Cover Image URL</label>
               <input
-                type="time"
-                name="reminderTime"
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
-              />
-            </div>
-
-            {/* Image */}
-            <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                Image URL (Optional)
-              </label>
-              <input
-                type="text"
+                type="url"
                 name="image"
-                placeholder="https://example.com/image.jpg"
-                className="input w-full rounded-full focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
+                placeholder="https://images.unsplash.com/..."
+                className="input w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </div>
 
-            {/* User Info */}
-            <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                User Email
-              </label>
-              <input
-                type="email"
-                value={user.email}
-                readOnly
-                className="input w-full rounded-full bg-gray-100 dark:bg-gray-800 focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
-              />
-            </div>
-
-            <div>
-              <label className="label font-medium text-gray-700 dark:text-gray-200">
-                User Name
-              </label>
-              <input
-                type="text"
-                value={user.displayName || user.name}
-                readOnly
-                className="input w-full rounded-full bg-gray-100 dark:bg-gray-800 focus:border-0 focus:outline-gray-300 dark:focus:outline-gray-600"
-              />
-            </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className={`btn w-full text-white mt-6 rounded-full transition ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+              className={`w-full py-4 rounded-2xl font-bold text-white transition-all transform active:scale-95 ${
+                loading ? "bg-slate-400" : "bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30"
               }`}
             >
-              {loading ? "Adding..." : "Add Habit"}
+              {loading ? "Saving Routine..." : "Launch Habit"}
             </button>
           </form>
         </div>

@@ -11,6 +11,10 @@ import Profile from "../Profile/Profile";
 import HabitDetails from "../pages/HabitDetails/HabitDetails";
 import UpdateHabit from "../pages/UpdateHabit/UpdateHabit";
 import NotFound from "../pages/NotFound/NotFound";
+import FAQ from "../Components/FAQ";
+import About from "../Components/About";
+import Stat from "../Components/Stat";
+import Terms from "../Components/Terms";
 
 export const router = createBrowserRouter([
     {
@@ -34,15 +38,36 @@ export const router = createBrowserRouter([
                 element: <NotFound />
             },
             {
+                path:"/terms",
+                element:<Terms></Terms>
+            },
+            {
                 path: "my-habit",
                 element: <PrivateRoute>
                     <MyHabits></MyHabits>
                 </PrivateRoute>
             },
             {
+                path: "/faq",
+                element: <FAQ></FAQ>
+            },
+            {
+                path: "/profile",
+                element: <Profile></Profile>
+            },
+            {
+                path: "stats",
+                element: <Stat></Stat>
+            },
+
+            {
+                path: "/about",
+                element: <About></About>
+            },
+            {
                 path: "browser-public-habit",
                 element: <BrowsePublicHabits></BrowsePublicHabits>,
-                loader: () => fetch("https://habit-tracker-server-coral.vercel.app/habit")
+                loader: () => fetch("http://localhost:3000/habit")
 
             },
             {
@@ -56,7 +81,7 @@ export const router = createBrowserRouter([
             {
                 path: "/habit/:id",
                 element: <PrivateRoute><HabitDetails></HabitDetails></PrivateRoute>,
-                loader: ({ params }) => fetch(`https://habit-tracker-server-coral.vercel.app/habit/${params.id}`)
+                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
 
 
 
@@ -68,7 +93,7 @@ export const router = createBrowserRouter([
                         <UpdateHabit></UpdateHabit>
                     </PrivateRoute>
                 ),
-                loader: ({ params }) => fetch(`https://habit-tracker-server-coral.vercel.app/habit/${params.id}`)
+                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
             },
         ]
     },

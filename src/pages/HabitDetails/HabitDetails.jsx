@@ -2,175 +2,130 @@ import React, { useState, useMemo } from "react";
 import { useLoaderData } from "react-router";
 import toast from "react-hot-toast";
 import { calculateStreak } from "../MyHabits/calculateStreak";
+import { HiFire, HiCalendar, HiClock, HiCheckCircle, HiUserCircle } from "react-icons/hi";
 
 const HabitDetails = () => {
   const data = useLoaderData();
   const habitData = data?.result;
   const [habit, setHabit] = useState(habitData);
 
-  if (!habit)
-    return (
-      <p className="text-center mt-10 text-gray-700 dark:text-gray-300">
-        Habit not found
-      </p>
-    );
+  if (!habit) return <div className="flex justify-center items-center h-96 font-bold text-slate-400">Habit data unavailable.</div>;
 
   const todayStr = new Date().toISOString().split("T")[0];
-  const last30Days = Array.from({ length: 30 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    return d.toISOString().split("T")[0];
-  });
-
-  const completionDates = useMemo(
-    () =>
-      (habit.completionHistory || []).map((d) =>
-        new Date(d).toISOString().split("T")[0]
-      ),
+  
+  const completionDates = useMemo(() =>
+      (habit.completionHistory || []).map((d) => new Date(d).toISOString().split("T")[0]),
     [habit.completionHistory]
   );
 
-  const completedDays = last30Days.filter((d) =>
-    completionDates.includes(d)
-  ).length;
-  const progressPercent = Math.round((completedDays / 30) * 100);
   const streak = calculateStreak(completionDates);
+  const isCompletedToday = completionDates.includes(todayStr);
 
   const handleMarkComplete = async () => {
-    if (completionDates.includes(todayStr)) {
-      toast.error("Already marked complete today!");
-      return;
-    }
+    if (isCompletedToday) return toast.error("Already tracked for today!");
 
     const updatedCompletion = [...(habit.completionHistory || []), todayStr];
     setHabit((prev) => ({
       ...prev,
       completionHistory: updatedCompletion,
-      currentStreak: calculateStreak(updatedCompletion),
     }));
 
     try {
-      const res = await fetch(
-        `https://habit-tracker-server-coral.vercel.app/habit/${habit._id}/complete`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date: todayStr }),
-        }
-      );
-      const data = await res.json();
-      if (data.success) toast.success("Marked as complete!");
-      else toast.error(data.message || "Failed to mark complete!");
+      const res = await fetch(`http://localhost:3000/habit/${habit._id}/complete`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: todayStr }),
+      });
+      if (res.ok) toast.success("Daily goal reached!");
     } catch {
-      toast.error("Server error!");
+      toast.error("Cloud synchronization failed.");
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 px-4 sm:px-6 md:px-8 overflow-x-hidden">
-      <div className="bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden transition-colors duration-300">
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 p-4 sm:p-6 md:p-8">
-          {habit.image && (
-            <div className="w-full md:w-1/2 h-64 sm:h-80 md:h-auto flex-shrink-0">
-              <img
-                src={habit.image}
-                alt={habit.title}
-                className="w-full h-full object-cover rounded-xl shadow-md dark:shadow-gray-700 transition-all duration-300"
-              />
-            </div>
-          )}
-
-          <div className="flex flex-col justify-start space-y-4 w-full md:w-1/2 text-gray-800 dark:text-gray-200">
-            <h1 className="text-2xl sm:text-3xl mt-8 md:text-4xl font-bold break-words">
-              {habit.title}
-            </h1>
-
-            {/* Badges */}
-            <div className="flex flex-wrap gap-3">
-              <div className="relative group inline-block">
-                <span className="badge badge-lg badge-outline text-blue-600 border-blue-600 font-medium">
+    <div className="max-w-7xl mx-auto py-10 px-6 lg:px-12 animate-in fade-in duration-700">
+      
+      {/* --- Top Layout: Hero Section --- */}
+      <div className="flex flex-col lg:flex-row gap-10 items-start">
+        
+        {/* Left: Premium Image Card */}
+        <div className="w-full lg:w-[450px] sticky top-10">
+          <div className="group relative overflow-hidden rounded-[2.5rem] shadow-2xl border border-white dark:border-slate-800">
+            <img
+              src={habit.image || "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=1000"}
+              alt={habit.title}
+              className="w-full h-[500px] object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6">
+               <span className="px-4 py-2 bg-blue-600/90 backdrop-blur-md text-white rounded-2xl text-xs font-black uppercase tracking-widest">
                   {habit.category}
-                </span>
-                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-1 z-10 w-56 sm:w-64">
-                  Category: {habit.category}
-                </div>
-              </div>
-              <div className="relative group inline-block">
-                <span className="badge badge-lg badge-outline text-gray-500 border-gray-500 font-medium">
-                  Reminder: {habit.reminderTime || "Not set"}
-                </span>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="relative group inline-block">
-              <p className="leading-relaxed text-sm sm:text-base md:text-lg break-words">
-                {habit.description.length > 200
-                  ? habit.description.slice(0, 200) + "..."
-                  : habit.description}
-              </p>
-              {habit.description.length > 150 && (
-                <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded px-2 py-2 w-56 sm:w-64 max-h-40 overflow-y-auto whitespace-normal z-10">
-                  {habit.description}
-                </div>
-              )}
-            </div>
-
-            {/* Meta Info */}
-            <div className="text-xs sm:text-sm md:text-sm space-y-1 text-gray-500 dark:text-gray-400">
-              <p>
-                <span className="font-semibold">Created by:</span> {habit.userName}
-              </p>
-              <p>
-                <span className="font-semibold">Email:</span> {habit.userEmail}
-              </p>
-              <p>
-                <span className="font-semibold">Created At:</span>{" "}
-                {new Date(habit.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-
-            {/* Progress */}
-            <div className="mt-4">
-              <p className="font-semibold mb-1 text-sm sm:text-base">
-                Progress (Last 30 Days): {progressPercent}%
-              </p>
-              <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-3 sm:h-4">
-                <div
-                  className="bg-green-500 h-3 sm:h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Streak */}
-            <div className="mt-4">
-              <span className="inline-block bg-yellow-400 text-black font-bold px-4 py-1 rounded-full text-sm sm:text-base">
-                🔥 {streak} Day Streak
-              </span>
-            </div>
-
-            {/* Button */}
-            <div className="mt-6">
-              <button
-                onClick={handleMarkComplete}
-                disabled={completionDates.includes(todayStr)}
-                className={`w-full px-5 py-2 rounded-lg shadow text-white transition-all duration-300 text-sm sm:text-base ${
-                  completionDates.includes(todayStr)
-                    ? "bg-green-500 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                }`}
-              >
-                {completionDates.includes(todayStr)
-                  ? "Completed"
-                  : "Mark Complete ✅"}
-              </button>
+               </span>
             </div>
           </div>
         </div>
+
+        {/* Right: Detailed Content */}
+        <div className="flex-1 space-y-8">
+          <header>
+            <div className="flex items-center gap-2 text-blue-600 font-bold text-sm uppercase tracking-widest mb-2">
+              <HiCalendar className="text-lg" />
+              <span>Routine Protocol</span>
+            </div>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white leading-tight">
+              {habit.title}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-4 text-lg leading-relaxed max-w-2xl italic">
+              "{habit.description}"
+            </p>
+          </header>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <StatCard icon={<HiFire className="text-orange-500" />} label="Current Streak" value={`${streak} Days`} />
+            <StatCard icon={<HiClock className="text-blue-500" />} label="Reminder" value={habit.reminderTime || "Not Set"} />
+            <StatCard icon={<HiUserCircle className="text-emerald-500" />} label="Author" value={habit.userName.split(' ')[0]} />
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm">
+             <div className="flex justify-between items-center mb-6">
+                <h3 className="font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest text-sm">Task Execution</h3>
+                {isCompletedToday && <span className="text-emerald-500 font-bold flex items-center gap-1"><HiCheckCircle /> Verified</span>}
+             </div>
+
+             <button
+                onClick={handleMarkComplete}
+                disabled={isCompletedToday}
+                className={`w-full py-3 rounded-[1.5rem] font-black text-xl transition-all flex items-center justify-center gap-3 transform active:scale-95 shadow-xl ${
+                  isCompletedToday
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed shadow-none"
+                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/40 hover:-translate-y-1"
+                }`}
+              >
+                {isCompletedToday ? "Successfully Logged" : "Confirm Completion"}
+              </button>
+          </div>
+
+          {/* Footer Metadata */}
+          <div className="flex items-center gap-6 pt-4 text-xs font-bold text-slate-400 uppercase tracking-tighter">
+            <span>ID: {habit._id.slice(-8)}</span>
+            <span>Created: {new Date(habit.createdAt).toLocaleDateString()}</span>
+            <span>Ref: {habit.userEmail}</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
+
+// Internal Component for Stats
+const StatCard = ({ icon, label, value }) => (
+  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-slate-100 dark:border-slate-800">
+    <div className="text-2xl mb-2">{icon}</div>
+    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</div>
+    <div className="text-xl font-black text-slate-800 dark:text-white mt-1">{value}</div>
+  </div>
+);
 
 export default HabitDetails;

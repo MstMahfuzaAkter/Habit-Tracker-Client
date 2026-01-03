@@ -1,127 +1,130 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Slider from "react-slick";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Typewriter } from "react-simple-typewriter"; // <- import
+import { Typewriter } from "react-simple-typewriter";
 
-// Slick carousel styles
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router";
 
 const slides = [
   {
-    title: "Build Habits, Build Your Future",
-    subtitle: "Track your progress and stay consistent every day.",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+    title: "Master Your Daily Discipline",
+    subtitle: "Turn small actions into life-changing habits with precision tracking and analytics.",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    title: "Small Steps, Big Changes",
-    subtitle: "Consistency turns goals into achievements.",
-    image:
-      "https://i.postimg.cc/mgbKYq0H/girl-with-backpack-walking-up-stairs.jpg",
+    title: "Visualize Your Personal Growth",
+    subtitle: "Data-driven insights to help you understand your progress and stay on course.",
+    image: "https://i.postimg.cc/mgbKYq0H/girl-with-backpack-walking-up-stairs.jpg",
   },
   {
-    title: "Stay Motivated",
-    subtitle: "Join a community that grows together.",
-    image:
-      "https://i.postimg.cc/B61TPSp1/full-shot-woman-posing-sunset.jpg",
+    title: "Built for Peak Performance",
+    subtitle: "Join a community of high-achievers optimizing their routines every single day.",
+    image: "https://i.postimg.cc/B61TPSp1/full-shot-woman-posing-sunset.jpg",
   },
 ];
 
 const HeroSlider = () => {
   const sliderRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const settings = {
     dots: true,
     infinite: true,
     autoplay: true,
     arrows: false,
-    fade: true,
-    speed: 1000,
-    autoplaySpeed: 4000,
+    speed: 800,
+    autoplaySpeed: 5000,
     slidesToShow: 1,
     slidesToScroll: 1,
+    beforeChange: (old, next) => setCurrentSlide(next),
     appendDots: (dots) => (
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <div className="absolute bottom-10 left-1/2 md:left-[75%] -translate-x-1/2">
         <ul className="flex gap-3"> {dots} </ul>
       </div>
     ),
-    customPaging: () => (
-      <div className="w-3 h-3 bg-white/60 hover:bg-white rounded-full transition-all duration-300"></div>
+    customPaging: (i) => (
+      <div className={`w-3 h-3 rounded-full transition-all duration-500 ${i === currentSlide ? "bg-blue-600 w-8" : "bg-gray-300"}`}></div>
     ),
   };
 
   return (
-    <section className="relative overflow-hidden pb-10 rounded-2xl">
+    <section className="relative overflow-hidden rounded-3xl bg-base-100 shadow-xl mx-auto max-w-7xl mt-6 border border-base-300">
       <Slider ref={sliderRef} {...settings}>
         {slides.map((slide, i) => (
-          <div key={i} className="relative h-[80vh]">
-            {/* Background image */}
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center text-white px-4">
-              {/* Animated title with Typewriter */}
-              <motion.h1
-                key={`title-${i}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-4xl md:text-6xl font-bold mb-3"
-              >
-                <Typewriter
-                  words={[slide.title]}
-                  loop={1} // type once
-                  cursor
-                  cursorStyle="_"
-                  typeSpeed={70}
-                  deleteSpeed={50}
-                  delaySpeed={2000}
+          <div key={i} className="outline-none">
+            <div className="flex flex-col md:flex-row items-center h-auto md:h-[70vh]">
+              
+              {/* LEFT SIDE: IMAGE */}
+              <div className="w-full md:w-1/2 h-[40vh] md:h-full overflow-hidden">
+                <motion.img
+                  initial={{ scale: 1.2, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 1.2 }}
+                  src={slide.image}
+                  alt={slide.title}
+                  className="w-full h-full object-cover"
                 />
-              </motion.h1>
+              </div>
 
-              {/* Animated subtitle */}
-              <motion.p
-                key={`subtitle-${i}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="text-lg md:text-2xl max-w-2xl"
-              >
-                {slide.subtitle}
-              </motion.p>
+              {/* RIGHT SIDE: CONTENT */}
+              <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center items-start text-left bg-base-100">
+                <motion.div
+                  initial={{ x: 50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 text-base-content min-h-[1.5em]">
+                    {currentSlide === i && (
+                      <Typewriter
+                        words={[slide.title]}
+                        loop={1}
+                        cursor
+                        typeSpeed={50}
+                      />
+                    )}
+                  </h1>
+
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={`sub-${i}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="text-lg text-base-content/70 leading-relaxed mb-8"
+                    >
+                      {slide.subtitle}
+                    </motion.p>
+                  </AnimatePresence>
+
+                  <Link to="/browser-public-habit" className="btn btn-primary btn-md md:btn-lg rounded-full px-10 shadow-lg shadow-primary/20 transition-transform hover:scale-105 active:scale-95">
+                    Explore Now
+                  </Link>
+                </motion.div>
+              </div>
+
             </div>
           </div>
         ))}
       </Slider>
 
-      {/* Manual Navigation Buttons */}
-      <button
-        onClick={() => sliderRef.current.slickPrev()}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition"
-      >
-        <ChevronLeft size={28} />
-      </button>
-
-      <button
-        onClick={() => sliderRef.current.slickNext()}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition"
-      >
-        <ChevronRight size={28} />
-      </button>
+      {/* Manual Navigation - Re-positioned for the split layout */}
+      <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4 pointer-events-none z-10">
+        <button
+          onClick={() => sliderRef.current.slickPrev()}
+          className="pointer-events-auto bg-base-100/80 hover:bg-primary hover:text-white text-base-content p-3 rounded-full shadow-lg transition-all"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          onClick={() => sliderRef.current.slickNext()}
+          className="pointer-events-auto bg-base-100/80 hover:bg-primary hover:text-white text-base-content p-3 rounded-full shadow-lg transition-all"
+        >
+          <ChevronRight size={24} />
+        </button>
+      </div>
     </section>
   );
 };

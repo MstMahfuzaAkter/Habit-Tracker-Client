@@ -10,7 +10,7 @@ const UpdateHabit = () => {
 
   // 🔹 Fetch habit data
   useEffect(() => {
-    fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`)
+    fetch(`http://localhost:3000/habit/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && data?.result) {
@@ -32,7 +32,7 @@ const UpdateHabit = () => {
     e.preventDefault();
     const { _id, ...updatedData } = habit;
 
-    fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`, {
+    fetch(`http://localhost:3000/habit/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData),
@@ -44,7 +44,7 @@ const UpdateHabit = () => {
             duration: 3000,
             position: "top-right",
           });
-          setTimeout(() => navigate("/my-habit"), 600);
+          setTimeout(() => navigate("/my-habits"), 600);
         } else {
           toast.error("Failed to update habit!");
         }

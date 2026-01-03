@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { calculateStreak } from "./calculateStreak";
 import { AuthContext } from "../../context/AuthContext";
 import Loader from "../Loader/Loader";
+import { HiOutlinePencilAlt, HiOutlineTrash, HiOutlineCheckCircle, HiFire, HiOutlineCalendar } from "react-icons/hi";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const MyHabits = () => {
   const { user } = useContext(AuthContext);
@@ -11,12 +13,11 @@ const MyHabits = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch habits from backend
   const fetchHabits = async () => {
     if (!user?.email) return;
     setLoading(true);
     try {
-      const res = await fetch(`https://habit-tracker-server-coral.vercel.app/my-habits/${user.email}`);
+      const res = await fetch(`http://localhost:3000/my-habits/${user.email}`);
       const data = await res.json();
       const habitsWithStreak = (data.result || []).map((habit) => {
         const todayStr = new Date().toISOString().split("T")[0];
@@ -28,8 +29,8 @@ const MyHabits = () => {
     } catch (err) {
       Swal.fire({
         icon: "error",
-        title: "Failed to load habits",
-        text: "Please try again later.",
+        title: "Connection Error",
+        text: "Could not sync with the server.",
       });
     } finally {
       setLoading(false);
@@ -40,31 +41,34 @@ const MyHabits = () => {
     fetchHabits();
   }, [user]);
 
-  // SweetAlert for delete
   const handleDelete = (id) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: "Delete Habit?",
+      text: "This will permanently erase your streak data!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#64748B",
+      confirmButtonText: "Yes, delete it",
+      background: '#ffffff',
+      customClass: {
+        popup: 'rounded-[2rem]',
+        confirmButton: 'rounded-xl px-6 py-3',
+        cancelButton: 'rounded-xl px-6 py-3'
+      }
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`, { method: "DELETE" });
+          await fetch(`http://localhost:3000/habit/${id}`, { method: "DELETE" });
           setHabits((prev) => prev.filter((h) => h._id !== id));
-          Swal.fire("Deleted!", "Your habit has been deleted.", "success");
+          toast.success("Habit removed");
         } catch (err) {
-          console.error(err);
           Swal.fire("Error!", "Failed to delete habit.", "error");
         }
       }
     });
   };
 
-  // Mark complete with SweetAlert
   const handleMarkComplete = async (id) => {
     const todayStr = new Date().toISOString().split("T")[0];
 
@@ -73,163 +77,111 @@ const MyHabits = () => {
         if (habit._id !== id) return habit;
 
         if (habit.completedToday) {
-          Swal.fire({
-            icon: "info",
-            title: "Already Completed",
-            text: "You have already marked this habit as complete today!",
-          });
+          Swal.fire({ icon: "info", title: "Already Done!", text: "You've crushed this habit today!" });
           return habit;
         }
 
         const updatedHistory = [...(habit.completionHistory || []), todayStr];
         const newStreak = calculateStreak(updatedHistory);
 
-        // Update backend
-        fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}/complete`, {
+        fetch(`http://localhost:3000/habit/${id}/complete`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ date: todayStr }),
-        })
-          .then(() => {
-            Swal.fire({
-              icon: "success",
-              title: "Great job! 💪",
-              text: `You have completed "${habit.title}" for today.`,
-            });
-          })
-          .catch(() => {
-            Swal.fire({
-              icon: "error",
-              title: "Oops!",
-              text: "Failed to update habit on the server.",
-            });
-          });
+        }).catch(() => {
+          Swal.fire("Error", "Failed to save progress.", "error");
+        });
 
         return { ...habit, completionHistory: updatedHistory, currentStreak: newStreak, completedToday: true };
       })
     );
   };
 
-  if (loading)
-    return <Loader></Loader>
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="p-4 sm:p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">My Habits</h1>
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4 text-center md:text-left">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">My Daily <span className="text-blue-600">Habits</span></h1>
+          <p className="text-slate-500 font-medium">Keep the fire burning. You have {habits.filter(h => !h.completedToday).length} tasks remaining today.</p>
+        </div>
+        <button 
+          onClick={() => navigate("/add-habit")}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-blue-500/30 transition-all active:scale-95"
+        >
+          + Add New Habit
+        </button>
+      </header>
 
       {habits.length === 0 ? (
-        <p className="text-gray-500 text-center text-lg">No habits found. Add one to get started!</p>
+        <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
+          <div className="text-6xl mb-4">🌱</div>
+          <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300">Your garden is empty</h3>
+          <p className="text-slate-500 mb-6">Start your journey by adding your first habit.</p>
+        </div>
       ) : (
-        <>
-          {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="min-w-full border border-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-4 py-2 text-left w-1/4">Title</th>
-                  <th className="px-4 py-2 text-left w-1/6">Category</th>
-                  <th className="px-4 py-2 text-left w-1/6">Current Streak</th>
-                  <th className="px-4 py-2 text-left w-1/6">Created Date</th>
-                  <th className="px-4 py-2 text-left w-1/4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {habits.map((habit) => (
-                  <tr key={habit._id} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 truncate max-w-xs">{habit.title}</td>
-                    <td className="px-4 py-2 truncate max-w-xs">{habit.category}</td>
-                    <td className="px-4 py-2">{habit.currentStreak}</td>
-                    <td className="px-4 py-2">{new Date(habit.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-2 space-x-2 flex flex-wrap">
-                      <button
-                        onClick={() => {
-                          navigate(`/update-habit/${habit._id}`);
-                          Swal.fire({
-                            icon: "info",
-                            title: "Redirecting...",
-                            text: `You will update "${habit.title}".`,
-                            timer: 1200,
-                            showConfirmButton: false,
-                          });
-                        }}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
-                      >
-                        Update
-                      </button>
-                      <button
-                        onClick={() => handleDelete(habit._id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => handleMarkComplete(habit._id)}
-                        disabled={habit.completedToday}
-                        className={`px-2 py-1 rounded text-sm text-white ${habit.completedToday
-                            ? "bg-green-500 cursor-not-allowed"
-                            : "bg-blue-600 hover:bg-blue-700"
-                          }`}
-                      >
-                        {habit.completedToday ? "Completed" : "Mark Complete"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {habits.map((habit) => (
+            <div 
+              key={habit._id} 
+              className={`relative overflow-hidden bg-white dark:bg-slate-900 border-2 transition-all duration-300 rounded-[2.5rem] p-6 ${
+                habit.completedToday 
+                ? "border-green-500/50 shadow-green-500/5 bg-green-50/30 dark:bg-green-500/5" 
+                : "border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none"
+              }`}
+            >
+              {/* Card Header */}
+              <div className="flex justify-between items-start mb-4">
+                <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">
+                  {habit.category}
+                </span>
+                <div className="flex items-center gap-1 text-orange-500 font-black">
+                  <HiFire className="text-xl" />
+                  <span>{habit.currentStreak}</span>
+                </div>
+              </div>
 
-          {/* Mobile Cards */}
-          <div className="md:hidden space-y-4">
-            {habits.map((habit) => (
-              <div key={habit._id} className="border rounded-lg p-4 shadow-sm bg-white">
-                <h2 className="font-bold text-lg mb-1">{habit.title}</h2>
-                <p className="text-gray-600 mb-1">
-                  <span className="font-semibold">Category:</span> {habit.category}
-                </p>
-                <p className="text-gray-600 mb-1">
-                  <span className="font-semibold">Current Streak:</span> {habit.currentStreak}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Created:</span> {new Date(habit.createdAt).toLocaleDateString()}
-                </p>
-                <div className="flex flex-wrap gap-2">
+              {/* Title & Date */}
+              <h2 className="text-xl font-black text-slate-800 dark:text-white mb-1 line-clamp-1">{habit.title}</h2>
+              <div className="flex items-center gap-2 text-slate-400 text-xs mb-6">
+                <HiOutlineCalendar />
+                <span>Started {new Date(habit.createdAt).toLocaleDateString()}</span>
+              </div>
+
+              {/* Action Progress */}
+              <div className="space-y-4">
+                <button
+                  onClick={() => handleMarkComplete(habit._id)}
+                  disabled={habit.completedToday}
+                  className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-black transition-all ${
+                    habit.completedToday
+                    ? "bg-green-500 text-white cursor-default"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-600 hover:text-white"
+                  }`}
+                >
+                  <HiOutlineCheckCircle className="text-xl" />
+                  {habit.completedToday ? "Completed Today" : "Mark as Done"}
+                </button>
+
+                <div className="flex gap-2">
                   <button
-                    onClick={() => {
-                      navigate(`/update-habit/${habit._id}`);
-                      Swal.fire({
-                        icon: "info",
-                        title: "Redirecting...",
-                        text: `You will update "${habit.title}".`,
-                        timer: 1200,
-                        showConfirmButton: false,
-                      });
-                    }}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition flex-1"
+                    onClick={() => navigate(`/update-habit/${habit._id}`)}
+                    className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 transition-colors"
                   >
-                    Update
+                    <HiOutlinePencilAlt className="mr-2" /> Edit
                   </button>
                   <button
                     onClick={() => handleDelete(habit._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-1"
+                    className="p-3 rounded-2xl border border-red-100 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
                   >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleMarkComplete(habit._id)}
-                    disabled={habit.completedToday}
-                    className={`px-2 py-1 rounded text-white flex-1 ${habit.completedToday
-                        ? "bg-green-500 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                      }`}
-                  >
-                    {habit.completedToday ? "Completed" : "Mark Complete"}
+                    <HiOutlineTrash className="text-xl" />
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
