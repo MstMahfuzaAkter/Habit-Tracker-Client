@@ -31,7 +31,7 @@ const HabitDetails = () => {
     }));
 
     try {
-      const res = await fetch(`http://localhost:3000/habit/${habit._id}/complete`, {
+      const res = await fetch(`https://habit-tracker-server-coral.vercel.app/habit/${habit._id}/complete`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: todayStr }),

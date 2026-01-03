@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
             {
                 path: "browser-public-habit",
                 element: <BrowsePublicHabits></BrowsePublicHabits>,
-                loader: () => fetch("http://localhost:3000/habit")
+                loader: () => fetch("https://habit-tracker-server-coral.vercel.app/habit")
 
             },
             {
@@ -81,7 +81,7 @@ export const router = createBrowserRouter([
             {
                 path: "/habit/:id",
                 element: <PrivateRoute><HabitDetails></HabitDetails></PrivateRoute>,
-                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
+                loader: ({ params }) => fetch(`https://habit-tracker-server-coral.vercel.app/habit/${params.id}`)
 
 
 
@@ -93,7 +93,7 @@ export const router = createBrowserRouter([
                         <UpdateHabit></UpdateHabit>
                     </PrivateRoute>
                 ),
-                loader: ({ params }) => fetch(`http://localhost:3000/habit/${params.id}`)
+                loader: ({ params }) => fetch(`https://habit-tracker-server-coral.vercel.app/habit/${params.id}`)
             },
         ]
     },

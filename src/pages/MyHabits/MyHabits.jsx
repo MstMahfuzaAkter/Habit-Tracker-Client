@@ -17,7 +17,7 @@ const MyHabits = () => {
     if (!user?.email) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:3000/my-habits/${user.email}`);
+      const res = await fetch(`https://habit-tracker-server-coral.vercel.app/my-habits/${user.email}`);
       const data = await res.json();
       const habitsWithStreak = (data.result || []).map((habit) => {
         const todayStr = new Date().toISOString().split("T")[0];
@@ -59,7 +59,7 @@ const MyHabits = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await fetch(`http://localhost:3000/habit/${id}`, { method: "DELETE" });
+          await fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}`, { method: "DELETE" });
           setHabits((prev) => prev.filter((h) => h._id !== id));
           toast.success("Habit removed");
         } catch (err) {
@@ -84,7 +84,7 @@ const MyHabits = () => {
         const updatedHistory = [...(habit.completionHistory || []), todayStr];
         const newStreak = calculateStreak(updatedHistory);
 
-        fetch(`http://localhost:3000/habit/${id}/complete`, {
+        fetch(`https://habit-tracker-server-coral.vercel.app/habit/${id}/complete`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ date: todayStr }),
