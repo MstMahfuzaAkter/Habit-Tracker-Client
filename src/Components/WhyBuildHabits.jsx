@@ -27,7 +27,7 @@ const benefits = [
 
 const WhyBuildHabits = () => {
   return (
-    <section className=" bg-[#FDFDFD] dark:bg-[#0B0F1A] transition-colors duration-500">
+    <section className=" bg-[#FDFDFD] px-4 dark:bg-[#0B0F1A] transition-colors duration-500">
       <div className="max-w-[1400px] mx-auto ">
         
         {/* standardized Section Header */}

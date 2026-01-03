@@ -27,7 +27,7 @@ const PublicHabits = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#0B0F1A] transition-colors duration-500 pb-10 pt-10">
+    <div className="min-h-screen px-4 bg-[#FDFDFD] dark:bg-[#0B0F1A] transition-colors duration-500 pb-10 pt-10">
       
       {/* Section Header */}
       <div className="max-w-[1400px] mx-auto  mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
