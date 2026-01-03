@@ -58,7 +58,7 @@ const Footer = () => {
         <div>
           <h3 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-6">Quick Links</h3>
           <ul className="space-y-4 text-slate-400 text-sm">
-            <li><Link to="/my-habits" className="hover:text-white hover:pl-2 transition-all">My Dashboard</Link></li>
+            <li><Link to="/my-habit" className="hover:text-white hover:pl-2 transition-all">My Dashboard</Link></li>
             <li><Link to="/browser-public-habit" className="hover:text-white hover:pl-2 transition-all">Global Habits</Link></li>
             <li><Link to="/add-habit" className="hover:text-white hover:pl-2 transition-all">Create Habit</Link></li>
             <li><Link to="/terms" className="hover:text-white hover:pl-2 transition-all">Terms of Service</Link></li>
